@@ -63,7 +63,7 @@ public class ExcelExporter<T> implements AutoCloseable {
 	// used when calling the data provider to fetch data
 	private static final int DEFAULT_DATA_FETCH_SIZE = 2000;
 	// Excel has a limit of 1,048,576 rows
-	private static final int DEFAULT_MAX_ROWS_PER_SHEET = 1048576;
+	private static final int DEFAULT_MAX_ROWS_PER_SHEET = 1048575;
 	// Max size of queue so not to consume too much memory
 	private static final int DEFAULT_MAX_QUEUE_SIZE = 10000;
 	// wait 5mins for data before timeout.
@@ -311,7 +311,7 @@ public class ExcelExporter<T> implements AutoCloseable {
 			// write while user is not done or more records are available
 			while (!isEndOfData.get() || !dataRecordsQueue.isEmpty()) {
 				int rowCount = writeDataLines(activeSheet);
-				if (rowCount >= maxRowsPerSheet)
+				if (!isEndOfData.get() && rowCount >= maxRowsPerSheet)
 					openSheet();
 				if (!isEndOfData.get() && dataRecordsQueue.isEmpty()) {
 					log.info("Waiting for more records to write...");
@@ -379,7 +379,7 @@ public class ExcelExporter<T> implements AutoCloseable {
 	}
 
 	private boolean isOpen() {
-		return (workbook != null && !isWritingCompleted.get());
+		return (workbook != null  || !isWritingCompleted.get() );
 	}
 
 	/***
@@ -414,7 +414,7 @@ public class ExcelExporter<T> implements AutoCloseable {
 		// free file resources
 		if (workbook instanceof SXSSFWorkbook)
 			((SXSSFWorkbook) workbook).dispose();
-
+		workbook = null;
 	}
 
 	/**

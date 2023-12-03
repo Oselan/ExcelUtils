@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Console Appender.  Typically used during dev-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Rolling file appender.  One file / day. Max 30 days or 100MB -->
+    <property name="LOG_FILE" value="Oselan" />
+    <property name="LOG_DIR" value="logs/oselan" />
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${LOG_FILE}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/%d{yyyy/MM}/${LOG_FILE}.%i.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-4relative [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+<!--	<appender name="MAILER"  class="com.sirenanalytics.commons.exceptions.BufferedSMTPAppender"	>
+		class="ch.qos.logback.classic.net.SMTPAppender"
+		<bufferSizeTrigger>${BUFFER_SIZE_TRIGGER:-20}</bufferSizeTrigger>
+        <intervalTrigger>${INTERVAL_TRIGGER_IN_MINUTES:-10}</intervalTrigger>
+        <bufferMaxCapacity>${BUFFER_MAX_CAPACITY:-50}</bufferMaxCapacity>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+          <level>${ERROR_MAIL_ENABLED:-ERROR}</level>
+        </filter>
+		<smtpHost>${MAIL_HOST:-smtp.gmail.com}</smtpHost>
+		<smtpPort>${MAIL_PORT:-587}</smtpPort>
+	    <STARTTLS>${MAIL_TLS:-true}</STARTTLS> 
+		<SSL>${MAIL_SSL:-false}</SSL>
+		<username>${MAIL_USERNAME:-impactQALeb@gmail.com}</username>
+		<password>${MAIL_PASSWORD:-hrstyftvasxlwvyc}</password>
+		<from>${ERROR_MAIL_SENDER:-impactQALeb@gmail.com}</from>
+		<includeCallerData>true</includeCallerData>
+		<asynchronousSending>true</asynchronousSending>-->
+<!--		 one or more recipients are possible 
+		<to>${ERROR_MAIL_RECEPIENT:-ahmad.h@sirenanalytics.com}</to>
+		<subject>${ENVIRONMENT:-Dev} - ${PROJECT:-Lebanon Works} Error Occured</subject>
+
+		<layout class="ch.qos.logback.classic.html.HTMLLayout" />
+		<cyclicBufferTracker
+			class="ch.qos.logback.core.spi.CyclicBufferTracker">
+			<bufferSize>10</bufferSize>
+		</cyclicBufferTracker>
+	</appender>-->
+     
+    <!-- Root level logger -->
+    <root level="${ROOT_LOGGING_LEVEL:-INFO}">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ROLLING" />
+        <!--appender-ref ref="MAILER" /-->
+    </root>
+
+
+    <!-- Additional package level loggers -->
+    <logger name="org.springframework" level="INFO" />
+    <logger name="org.hibernate.type" level="OFF"/>
+     <logger name="org.hibernate.SQL" level="debug"/>
+    <logger name="com.sirenanalytics.impact_aid_card_auth.config.TimeLoggingAspect" level="${TIME_LOGGING_LEVEL:-INFO}"/>
+    <logger name="MethodTimeLogging" level="${METHOD_TIME_LOGGING_LEVEL:-INFO}"/>
+
+</configuration>

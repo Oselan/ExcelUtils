@@ -33,8 +33,8 @@ public class ExcelExporterApplication implements CommandLineRunner {
 		    
         log.info("Generating report to : "+  file.getAbsolutePath());
 		FileOutputStream stream = new FileOutputStream(file);
-		userService.generateReport(stream);
-
+		 
+		userService.generateReport(stream); 
 		
 	}
 

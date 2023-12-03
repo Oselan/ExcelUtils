@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.oselan.commons.exceptions.ConflictException;
@@ -21,7 +22,7 @@ public class UserService  {
 	@Autowired
 	private UserRepository userRepository;
 	 
-//	@Async
+	@Async 
 //	@SneakyThrows(InterruptedException.class)
 	public void generateReport(OutputStream stream) throws ConflictException, IOException {
 
@@ -30,12 +31,12 @@ public class UserService  {
 				.withColumn("Id", "id")
 				.withColumn("First Name", "firstName")
 				.withColumn("Last Name", "lastName") .build();
- 
-		try (ExcelExporter<UserDTO> exporter = new ExcelExporter<UserDTO>(stream, columnsDef, "User Sheet")) { 
+		ExcelExporter<UserDTO> exporter = new ExcelExporter<UserDTO>(stream, columnsDef, "User Sheet");
+		try (exporter) { 
 			log.info("generating users report" );
 			exporter.open();
-			exporter.setDataFetchSize(100);
-			exporter.setMaxRowsPerSheet(1000);
+			exporter.setDataFetchSize(5000);
+//     		exporter.setMaxRowsPerSheet(5989);
 			exporter.generateReportFromDataProvider(
 					//function that retrieves data page and takes a parameter a pageable 
 					(pageable) ->{
@@ -48,6 +49,7 @@ public class UserService  {
 									.lastName(u.getLastName())
 									.build() 
 					   		 );
+			exporter.close();
 		} catch (Exception e) {
 			log.error("Exception occured generating report", e);
 			throw e;

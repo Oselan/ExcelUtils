@@ -1,0 +1,10 @@
+services:
+  postgres:
+    container_name: excel_postgres_db
+    image: 'postgres:16.0'
+    environment:
+      - 'POSTGRES_DB=excel'
+      - 'POSTGRES_PASSWORD=secret_password'
+      - 'POSTGRES_USER=excel'
+    ports:
+      - '5432'
